@@ -1,13 +1,11 @@
 import React from 'react';
-import { connect } from 'react-apollo';
-import gql from 'apollo-client/gql';
 
 class App extends React.Component {
 
   render() {
     return (
         <div>
-          <h1>This is the app: {JSON.stringify(this.props.list)}</h1>
+          <a href="/"><h1>Synth Music Subreddits</h1></a>
           {this.props.children}
         </div>
     );
@@ -15,16 +13,4 @@ class App extends React.Component {
 
 }
 
-export default connect({
-  mapQueriesToProps: ({ ownProps, state }) => {
-    return {
-      list: {
-        query: gql`
-          {
-            list
-          }
-        `
-      }
-    };
-  }
-})(App);
+export default App;

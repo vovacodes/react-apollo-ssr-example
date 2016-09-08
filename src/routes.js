@@ -8,7 +8,7 @@ export const getRoutes = () => {
   return (
       <Route path="/" foo="bar" component={App}>
         <IndexRoute component={List} />
-        <Route path="/details" component={Details}/>
+        <Route path="/details/:id" component={Details}/>
       </Route>
   );
 };

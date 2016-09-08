@@ -5,23 +5,27 @@
   "main": "dist/server.js",
   "scripts": {
     "build": "babel src --out-dir dist",
-    "build:watch": "babel src --out-dir dist --watch",
-    "start": "node dist/server.js",
-    "start:watch": "nodemon $NODE_DEBUG_OPTION dist/server.js --watch src",
+    "build:watch": "babel src --out-dir dist --watch --source-maps",
+    "start": "node $NODE_DEBUG_OPTION dist/server.js",
+    "start:watch": "nodemon $NODE_DEBUG_OPTION dist/server.js src --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Vladimir Guguiev <wizardzloy@gmail.com>",
   "license": "ISC",
   "dependencies": {
-    "apollo-client": "^0.3.4",
-    "express": "^4.13.4",
-    "react": "^15.0.2",
-    "react-apollo": "^0.3.4",
-    "react-dom": "^15.0.2",
+    "apollo-client": "^0.4.14",
+    "express": "^4.14.0",
+    "express-graphql": "^0.5.4",
+    "graphql": "^0.7.0",
+    "graphql-tag": "^0.1.13",
+    "graphqlhub-schemas": "^0.1.0",
+    "react": "^15.3.1",
+    "react-apollo": "^0.5.2",
+    "react-dom": "^15.3.1",
     "react-redux": "^4.4.5",
-    "react-router": "^2.4.0",
-    "react-router-redux": "^4.0.4",
-    "redux": "^3.5.2"
+    "react-router": "^2.7.0",
+    "react-router-redux": "^4.0.5",
+    "redux": "^3.6.0"
   },
   "devDependencies": {
     "babel-cli": "^6.8.0",

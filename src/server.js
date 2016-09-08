@@ -1,21 +1,47 @@
 const { inspect }  = require('util');
 const express = require('express');
+const expressGraphql = require('express-graphql');
 const React = require('react');
 const ReactDomServer = require('react-dom/server');
 const { createMemoryHistory, match, RouterContext } = require('react-router');
 const ApolloClient = require('apollo-client').default;
 const { ApolloProvider } = require('react-apollo');
+const { renderToStringWithData } = require('react-apollo/server');
+const { Reddit } = require('graphqlhub-schemas');
+const { GraphQLSchema, graphql } = require('graphql');
+const { print } = require('graphql-tag/printer');
 
 const App = require('./components/App').default;
 const { getRoutes } = require('./routes');
 
 const app = express();
-const mockGraphQLNetworkInterface = {
-  query: () => Promise.resolve({ data: { list: [ 'apple', 'orange' ] }, errors: null })
-};
-const apolloClient = new ApolloClient({
-  networkInterface: mockGraphQLNetworkInterface
+
+// define GraphQL Schema
+const graphqlSchema = new GraphQLSchema({
+  query: Reddit.QueryObjectType
 });
+
+// define ApolloClient's NetworkInterface, that will resolve the queries locally
+const localGraphQLNetworkInterface = {
+  query: (graphqlRequest) => graphql(
+      graphqlSchema,
+      print(graphqlRequest.query),
+      null,
+      null,
+      graphqlRequest.variables,
+      graphqlRequest.operationName
+  )
+};
+
+// initialize ApolloClient
+const apolloClient = new ApolloClient({
+  networkInterface: localGraphQLNetworkInterface
+});
+
+app.use('/graphql', expressGraphql({
+  schema: graphqlSchema,
+  graphiql: true
+}));
 
 // Server-Side-Rendering
 app.use((req, res) => {
@@ -28,9 +54,11 @@ app.use((req, res) => {
     if (err) {
       return res.status(500).send(err.message);
     }
+
     if (redirectLocation) {
       return res.redirect(302, redirectLocation.pathname + redirectLocation.search);
     }
+
     if (!renderProps) {
       return res.status(404).send('Not found');
     }
@@ -41,11 +69,9 @@ app.use((req, res) => {
         </ApolloProvider>
     );
 
-    console.log('app.props.children', inspect(app.props.children));
-
-    const html = ReactDomServer.renderToString(app);
-
-    res.send(html);
+    renderToStringWithData(app).then(({ markup, initialState }) => {
+      res.send(markup);
+    });
   });
 });
 

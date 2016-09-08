@@ -1,17 +1,54 @@
 import React from 'react';
+import { createFragment } from 'apollo-client';
+import { graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 
-export default class List extends React.Component {
+const subredditInfoFragment = createFragment(gql`
+  fragment subredditInfo on RedditSubreddit {
+    name
+    title
+    publicDescription
+  }
+`);
+
+const QUERY = gql`
+  query {
+    outrun: subreddit(name: "outrun") {
+      ...subredditInfo
+    }
+    synthwave: subreddit(name: "synthwave") {
+      ...subredditInfo
+    }
+    futuresynth: subreddit(name: "futuresynth") {
+      ...subredditInfo
+    }
+  }
+`;
+
+class List extends React.Component {
 
   render() {
+    const { errors, loading, outrun, synthwave, futuresynth } = this.props.data;
+
+    if (loading) {
+      return <div>Loading...</div>;
+    }
+
+    const listItems = [outrun, synthwave, futuresynth].map((subreddit) => (
+        <li key={subreddit.title}><a href={`/details/${subreddit.name}`}>{subreddit.title}</a></li>
+    ));
+
     return (
         <ul>
-          <li><a href="/details">Item 1</a></li>
-          <li><a href="/details">Item 2</a></li>
-          <li><a href="/details">Item 3</a></li>
-          <li><a href="/details">Item 4</a></li>
-          <li><a href="/details">Item 5</a></li>
+          {listItems}
         </ul>
     );
   }
 
 }
+
+export default graphql(QUERY, {
+  options: () => ({
+    fragments: subredditInfoFragment
+  })
+})(List);
