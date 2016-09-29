@@ -1,8 +1,6 @@
-const { inspect }  = require('util');
 const express = require('express');
 const expressGraphql = require('express-graphql');
 const React = require('react');
-const ReactDomServer = require('react-dom/server');
 const { createMemoryHistory, match, RouterContext } = require('react-router');
 const ApolloClient = require('apollo-client').default;
 const { ApolloProvider } = require('react-apollo');
